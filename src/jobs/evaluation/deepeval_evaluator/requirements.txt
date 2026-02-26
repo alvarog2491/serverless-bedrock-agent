@@ -1,0 +1,5 @@
+deepeval
+litellm
+boto3
+pandas
+python-dotenv

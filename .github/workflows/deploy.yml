@@ -1,0 +1,115 @@
+name: Bedrock Agent Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.STAGING_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Environments (Node & Python)
+        run: |
+          npm ci
+          python -m pip install --upgrade pip
+          # Standard install for CI environments
+          python -m pip install -r test/requirements.txt boto3 pytest-env
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Infrastructure Deployment
+        working-directory: infra
+        run: npx cdk deploy --all -c env=staging --require-approval never --outputs-file ../outputs.json
+
+      - name: Load CDK Outputs
+        id: cdk_outputs
+        run: |
+          echo "API_URL=$(jq -r '.. | .ApiGatewayUrl? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "KB_BUCKET=$(jq -r '.. | .KnowledgeBaseBucketName? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "EVAL_BUCKET=$(jq -r '.. | .EvaluationsBucketName? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "CLUSTER=$(jq -r '.. | .EvalClusterArn? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "TASK_DEF=$(jq -r '.. | .EvalTaskDefArn? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "SUBNETS=$(jq -r '.. | .EvalSubnets? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "SG=$(jq -r '.. | .EvalSecurityGroupId? // empty' outputs.json)" >> $GITHUB_ENV
+          echo "VPC=$(jq -r '.. | .EvalVpcId? // empty' outputs.json)" >> $GITHUB_ENV
+
+      - name: Verify System Health
+        run: python test/integration/test_health_check.py --api-url "${{ env.API_URL }}"
+
+      - name: Knowledge Base Sync
+        run: |
+          python scripts/sync_data.py "./assets/knowledge_base/samples/data" "${{ env.KB_BUCKET }}"
+          python scripts/sync_data.py "./assets/knowledge_base/samples/evaluation/test_sets" "${{ env.EVAL_BUCKET }}" "test_sets"
+
+      - name: Run Unit Tests
+        run: pytest test/unit -v
+
+      - name: DeepEval Evaluation (Fargate)
+        id: deepeval_eval
+        run: |
+          python3 scripts/run_evaluation.py \
+            --cluster "${{ env.CLUSTER }}" \
+            --task-def "${{ env.TASK_DEF }}" \
+            --subnets "${{ env.SUBNETS }}" \
+            --security-groups "${{ env.SG }}" \
+            --vpc-id "${{ env.VPC }}" > task_arn.txt
+
+          TASK_ARN=$(tail -n 1 task_arn.txt)
+          echo "TASK_ARN=$TASK_ARN" >> $GITHUB_ENV
+
+      - name: Verify Results
+        run: |
+          TASK_ID=$(echo "${{ env.TASK_ARN }}" | awk -F/ '{print $NF}')
+          REPORT_KEY="reports/eval-report-${TASK_ID}.json"
+          python scripts/check_eval_results.py --bucket "${{ env.EVAL_BUCKET }}" --report-key "$REPORT_KEY"
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.PROD_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Environments (Node & Python)
+        run: |
+          npm ci
+          python -m pip install --upgrade pip
+          python -m pip install -r test/requirements.txt boto3 pytest-env
+
+      - name: Infrastructure Deployment (Prod)
+        working-directory: infra
+        run: npx cdk deploy PersistenceStack-prod ComputeStack-prod InterfaceStack-prod MonitoringStack-prod -c env=prod --require-approval never --outputs-file ../outputs_prod.json
+
+      - name: Load CDK Outputs
+        id: cdk_outputs
+        run: |
+          echo "API_URL_PROD=$(jq -r '.. | .ApiGatewayUrl? // empty' outputs_prod.json)" >> $GITHUB_ENV
+          echo "KB_BUCKET_PROD=$(jq -r '.. | .KnowledgeBaseBucketName? // empty' outputs_prod.json)" >> $GITHUB_ENV
+
+      - name: Verify System Health (Prod)
+        run: python test/integration/test_health_check.py --api-url "${{ env.API_URL_PROD }}"
+
+      - name: Knowledge Base Sync
+        run: python scripts/sync_data.py "./assets/knowledge_base/samples/data" "${{ env.KB_BUCKET_PROD }}"

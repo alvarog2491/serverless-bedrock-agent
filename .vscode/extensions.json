@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "amazonwebservices.aws-toolkit-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "christian-kohler.path-intellisense"
+    ]
+}

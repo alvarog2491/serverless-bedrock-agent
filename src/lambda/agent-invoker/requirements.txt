@@ -1,0 +1,4 @@
+pydantic>=2.0.0
+aws-lambda-powertools[tracer]>=2.0.0
+langfuse>=2.0.0
+backoff==2.2.1

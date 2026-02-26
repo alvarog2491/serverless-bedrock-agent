@@ -1,0 +1,78 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Lead Collection API",
+        "description": "API for collecting and managing leads through the Bedrock agent chatbot",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/collect-lead": {
+            "post": {
+                "summary": "Collect lead information",
+                "description": "Collects and stores lead information when a user expresses interest in products or wants to be contacted",
+                "operationId": "collectLead",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Lead"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lead collected successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LeadResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Lead": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "reason"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "Email address of the lead",
+                        "format": "email"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "description": "The reason for collecting the email, such as the user's specific query or interest that prompted the collection."
+                    }
+                }
+            },
+            "LeadResponse": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "description": "Whether the operation was successful"
+                    },
+                    "lead_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the lead"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Confirmation or error message"
+                    }
+                }
+            }
+        }
+    }
+}

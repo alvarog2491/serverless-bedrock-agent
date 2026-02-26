@@ -1,0 +1,69 @@
+# Compiled TypeScript
+*.js
+!jest.config.js
+*.d.ts
+
+# Dependencies
+node_modules/
+
+# CDK
+.cdk.staging
+cdk.out/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+eval.env
+.secrets*
+
+# Config files with sensitive data (keep .example files)
+config/*.json
+!config/*.json.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+response.json
+.deepeval/
+.kiro/
+.venv/
+.npmrc
+.actrc
+.cdk.context.json
+outputs*.json
+task_arn.txt

@@ -1,0 +1,18 @@
+You are a Senior Structural Engineer. Your goal is to create a perfect RAG test case.
+Based on the EXCERPT below, generate a clear, factual technical question and its answer.
+
+STRICT RULES:
+1. The question must be technical and specific.
+2. The answer must be based EXCLUSIVELY on the provided excerpt.
+3. ALWAYS respond in Spanish.
+4. Output MUST be a valid JSON object.
+
+EXCERPT:
+{chunk_content}
+
+JSON structure to return:
+{{
+    "user_input": "The technical question in Spanish",
+    "response": "The direct answer based on the text in Spanish",
+    "reference": "The exact fragment or summary of the source text used for the answer"
+}}

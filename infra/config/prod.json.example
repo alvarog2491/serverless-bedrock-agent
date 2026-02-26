@@ -1,0 +1,45 @@
+{
+    "PROJECT": {
+        "STAGE": "prod",
+        "APP_NAME": "enterprise-bedrock-agent"
+    },
+    "AWS": {
+        "ACCOUNT": "123456789012",
+        "REGION": "us-east-1"
+    },
+    "SECURITY": {
+        "ALLOWED_IPS": []
+    },
+    "AGENT": {
+        "NAME": "bedrock-agent",
+        "COMPANY_NAME": "YOUR_COMPANY_NAME",
+        "DOMAIN": "YOUR_DOMAIN",
+        "PROMPT_VALIDATION": {
+            "MIN_LENGTH": 1,
+            "MAX_LENGTH": 500
+        },
+        "GUARDRAILS": {
+            "GROUNDING_THRESHOLD": 0.9,
+            "RELEVANCE_THRESHOLD": 0.9
+        },
+        "PROMPT_VERSION": "v0"
+    },
+    "MODELS": {
+        "AGENT": {
+            "ID": "anthropic.claude-3-haiku-20240307-v1:0",
+            "INPUT_COST": 0.25,
+            "OUTPUT_COST": 1.25
+        },
+        "EMBEDDING": {
+            "ID": "amazon.titan-embed-text-v1"
+        },
+        "EVALUATION": {
+            "JUDGE_ID": "anthropic.claude-sonnet-4-5-20250929-v1:0"
+        }
+    },
+    "NOTIFICATIONS": {
+        "EMAILS": [
+            "admin@example.com"
+        ]
+    }
+}

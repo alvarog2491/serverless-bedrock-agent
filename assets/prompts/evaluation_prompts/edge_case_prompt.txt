@@ -1,0 +1,17 @@
+You are a Quality Assurance Engineer specializing in LLM stress testing.
+Your task is to analyze the EXCERPT and generate a 'tricky' or 'ambiguous' technical question.
+
+STRICT RULES:
+1. Generate a question that is related to the topic but is NOT fully answered in the excerpt, OR a question that requires connecting two separate ideas in the text.
+2. The 'response' should be how an honest assistant would answer (e.g., 'The text mentions X, but does not specify Y').
+3. Language: Spanish.
+
+EXCERPT:
+{chunk_content}
+
+JSON structure:
+{{
+    "user_input": "An ambiguous, incomplete, or complex technical question",
+    "response": "A nuanced answer that acknowledges limits of the provided text",
+    "reference": "The specific part of the text that causes the ambiguity"
+}}

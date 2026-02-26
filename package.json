@@ -1,0 +1,35 @@
+{
+  "name": "enterprise-bedrock-agent",
+  "version": "0.1.0",
+  "bin": {
+    "enterprise-bedrock-agent": "infra/bin/enterprise-bedrock-agent.js"
+  },
+  "scripts": {
+    "build": "tsc -p infra",
+    "watch": "tsc -p infra -w",
+    "test": "jest",
+    "clean": "./cleanup.sh",
+    "cdk": "cd infra && cdk"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30",
+    "@types/node": "^24.10.1",
+    "aws-cdk": "2.1101.0",
+    "jest": "^30",
+    "ts-jest": "^29",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda-python-alpha": "^2.238.0-alpha.0",
+    "@cdklabs/generative-ai-cdk-constructs": "^0.1.312",
+    "aws-cdk-lib": "^2.234.1",
+    "constructs": "^10.0.0",
+    "zod": "^4.3.5",
+    "zod-to-json-schema": "^3.25.1"
+  }
+}

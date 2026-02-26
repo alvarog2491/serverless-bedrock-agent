@@ -1,0 +1,39 @@
+{
+    "name": "agent-guardrail",
+    "description": "Comprehensive safety guardrail designed to enforce strict content policies and privacy standards. It applies high-strength filtering across all sensitive categories and prevents prompt injections.",
+    "contentPolicyConfig": {
+        "filtersConfig": [
+            {
+                "type": "HATE",
+                "inputStrength": "HIGH",
+                "outputStrength": "HIGH"
+            },
+            {
+                "type": "INSULTS",
+                "inputStrength": "HIGH",
+                "outputStrength": "HIGH"
+            },
+            {
+                "type": "SEXUAL",
+                "inputStrength": "HIGH",
+                "outputStrength": "HIGH"
+            },
+            {
+                "type": "VIOLENCE",
+                "inputStrength": "HIGH",
+                "outputStrength": "HIGH"
+            },
+            {
+                "type": "MISCONDUCT",
+                "inputStrength": "HIGH",
+                "outputStrength": "HIGH"
+            },
+            {
+                "type": "PROMPT_ATTACK",
+                "inputStrength": "HIGH",
+                "outputStrength": "NONE"
+            }
+        ]
+    },
+    "blockedInputMessaging": "Lo siento, no puedo procesar esta solicitud porque infringe nuestras políticas de seguridad."
+}
